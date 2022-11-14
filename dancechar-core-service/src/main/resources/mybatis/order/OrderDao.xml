@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.litian.dancechar.core.biz.order.dao.inf.OrderInfoDao">
+
+    <select id="findList" parameterType="com.litian.dancechar.core.biz.order.dto.OrderReqDTO"
+            resultType="com.litian.dancechar.core.biz.order.dto.OrderRespDTO">
+        SELECT
+        c.*
+        FROM
+        order_info c
+        WHERE
+        c.delete_flag = 0
+        <if test="orderNo != null and orderNo != ''">
+            and c.order_no = #{orderNo}
+        </if>
+        <if test="mobile != null and mobile != ''">
+            and c.mobile = #{mobile}
+        </if>
+        <if test="status != null">
+            and c.status = #{status}
+        </if>
+        <if test="isCancel != null">
+            and c.order_time &lt;= date_sub(now(), interval 1 MINUTE)
+        </if>
+        <if test="limitRecords != null">
+            ORDER BY order_time desc limit #{limitRecords}
+        </if>
+    </select>
+
+    <select id="findByMobileAndOrderNo" resultType="com.litian.dancechar.core.biz.order.dao.entity.OrderInfoDO">
+        SELECT
+        c.*
+        FROM
+        order_info c
+        WHERE
+        c.delete_flag = 0 and c.order_no = #{orderNo} and c.mobile = #{mobile}
+    </select>
+</mapper>

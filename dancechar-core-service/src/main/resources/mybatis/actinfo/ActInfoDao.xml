@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.litian.dancechar.core.biz.activity.info.dao.inf.ActInfoDao">
+
+    <select id="findList" parameterType="com.litian.dancechar.core.biz.activity.info.dto.ActInfoReqDTO"
+            resultType="com.litian.dancechar.core.biz.activity.info.dto.ActInfoRespDTO">
+        SELECT
+        c.*
+        FROM
+        act_info c
+        WHERE
+        c.delete_flag = 0
+        <if test="actNo != null and actNo != ''">
+            and c.act_no = #{actNo}
+        </if>
+        <if test="actName != null and actName != ''">
+            and c.act_name like concat('%',#{actName},'%')
+        </if>
+        <if test="status != null">
+            and c.status = #{status}
+        </if>
+        <if test="startTime != null">
+            and c.start_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            and c.end_time &lt;= #{endTime}
+        </if>
+        ORDER BY id desc
+    </select>
+</mapper>

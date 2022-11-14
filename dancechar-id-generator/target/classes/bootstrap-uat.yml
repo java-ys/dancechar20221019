@@ -1,0 +1,126 @@
+server:
+  port: 5555
+  undertow:
+    # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
+    io-threads: 4
+    # 阻塞任务线程池, 当执行类似servlet请求阻塞操作, undertow会从这个线程池中取得线程,它的值设置取决于系统的负载
+    worker-threads: 1000
+    # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理
+    # 每块buffer的空间大小,越小的空间被利用越充分
+    buffer-size: 1024
+    # 是否分配的直接内存
+    direct-buffers: true
+spring:
+  application:
+    name: dancechar-id-generator
+  jackson:
+    # json 序列化排除值为 null 的属性
+    default-property-inclusion: non_null
+    # 配置 Date 类的时间格式，如果不涉及可以不加
+    date-format: yyyy-MM-dd HH:mm:ss
+    # 配置 Date 类的时区，如果不涉及可以不加
+    time-zone: GMT+8
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/dancechar?useUnicode=true&characterEncoding=UTF8&serverTimezone=CTT&allowMultiQueries=true
+    username: root
+    password: 451243480Guo
+    hikari:
+      minimum-idle:  10
+      maximum-pool-size:  50
+      auto-commit:  true
+      idle-timeout:  30000
+      pool-name:  DatebookHikariCP
+      max-lifetime:  1800000
+      connection-timeout:  60000
+      connection-test-query:  SELECT 1
+  redis:
+    severs: 127.0.0.1:6379
+    database: 0
+    timeout: 5000
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: uat
+        register-enabled: true
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yaml
+        namespace: uat
+        group: uat
+        prefix: dancechar-id-generator
+# mybaits-plus配置
+mybatis-plus:
+  # MyBatis Mapper所对应的XML文件位置
+  mapper-locations: classpath*:/mybatis/**/*Dao.xml
+  global-config:
+    # 关闭MybatisPlus自带的banner
+    banner: false
+    db-config:
+      worker-id: 1
+      # 主键类型
+      id-type: id_worker_str
+      field-strategy: default
+      table-underline: true
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# logging:
+#  spring: classpath:logback-spring.xml
+
+# 暴露actuator监控端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+# feign 配置
+feign:
+  sentinel:
+    enabled: true
+  okhttp:
+    enabled: true
+  httpclient:
+    enabled: false
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 10000
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+
+#请求处理的超时时间
+ribbon:
+  ReadTimeout: 10000
+  ConnectTimeout: 10000
+  eager-load:
+    enabled: true
+enableSqlFormat: false
+
+#xxl job配置
+xxl:
+  job:
+    accessToken: default_token
+    admin:
+      addresses: http://127.0.0.1:8080/xxl-job-admin
+    executor:
+      address:
+      appname: dancechar-id-generator
+      ip:
+      logpath: /Users/tojson/data/applogs/xxl-job/jobhandler
+      logretentiondays: 30
+      port: 9999   #xxl-job连接端口

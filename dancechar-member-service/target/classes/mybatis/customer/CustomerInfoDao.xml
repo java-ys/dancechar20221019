@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.litian.dancechar.member.biz.customer.dao.inf.CustomerInfoDao">
+
+    <select id="findList" parameterType="com.litian.dancechar.member.biz.customer.dto.CustomerInfoReqDTO"
+            resultType="com.litian.dancechar.member.biz.customer.dto.CustomerInfoRespDTO">
+        SELECT
+        c.*
+        FROM
+        customer_info c
+        WHERE
+        c.delete_flag = 0
+        <if test="mobile != null and mobile != ''">
+            and c.mobile = #{mobile}
+        </if>
+        <if test="realName != null and realName != ''">
+            and c.real_name like concat('%',#{realName},'%')
+        </if>
+    </select>
+</mapper>

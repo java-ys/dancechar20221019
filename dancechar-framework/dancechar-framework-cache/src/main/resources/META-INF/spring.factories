@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.litian.dancechar.framework.cache.redis.config.JedisAutoConfiguration,\
+  com.litian.dancechar.framework.cache.redis.config.RedissonAutoConfiguration,\
+  com.litian.dancechar.framework.cache.caffeine.util.CaffeineCacheUtil

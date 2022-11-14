@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.litian.dancechar.member.biz.integral.dao.inf.IntegralDao">
+
+    <select id="findList" parameterType="com.litian.dancechar.member.biz.integral.dto.IntegralInfoReqDTO"
+            resultType="com.litian.dancechar.member.biz.integral.dto.IntegralInfoRespDTO">
+        SELECT
+        c.*
+        FROM
+        integral_info c
+        WHERE
+        c.delete_flag = 0
+        <if test="customerId != null and customerId != ''">
+            and c.customer_id = #{customerId}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,169 @@
+server:
+  port: 7777
+  undertow:
+    # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
+    io-threads: 4
+    # 阻塞任务线程池, 当执行类似servlet请求阻塞操作, undertow会从这个线程池中取得线程,它的值设置取决于系统的负载
+    worker-threads: 1000
+      # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理
+    # 每块buffer的空间大小,越小的空间被利用越充分
+    buffer-size: 1024
+    # 是否分配的直接内存
+    direct-buffers: true
+spring:
+  application:
+    name: dancechar-core-service
+  jackson:
+    # json 序列化排除值为 null 的属性
+    default-property-inclusion: non_null
+    # 配置 Date 类的时间格式，如果不涉及可以不加
+    date-format: yyyy-MM-dd HH:mm:ss
+    # 配置 Date 类的时区，如果不涉及可以不加
+    time-zone: GMT+8
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/dancechar?useUnicode=true&characterEncoding=UTF8&serverTimezone=CTT&allowMultiQueries=true
+    username: root
+    password: root
+    hikari:
+      minimum-idle:  10
+      maximum-pool-size:  50
+      auto-commit:  true
+      idle-timeout:  30000
+      pool-name:  DatebookHikariCP
+      max-lifetime:  1800000
+      connection-timeout:  60000
+      connection-test-query:  SELECT 1
+  redis:
+    severs: 127.0.0.1:6379
+    database: 0
+    timeout: 5000
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: public
+        register-enabled: true
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yaml
+        namespace: dev
+        group: dev
+        prefix: dancechar-core-service
+    sentinel:
+      eager: true
+      transport:
+        #配置Sentin dashboard地址
+        dashboard: localhost:9000
+        # 默认8719端口，假如被占用了会自动从8719端口+1进行扫描，直到找到未被占用的 端口
+        port: 8719
+      #nacos  从nacos拉取数据需要配置
+      datasource:
+        #名称随意
+        flow:
+          nacos:
+            server-addr: localhost:8848
+            dataId: ${spring.application.name}-flow-rules
+            groupId: SENTINEL_GROUP
+            rule-type: flow
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+    producer: # producer 生产者
+      retries: 0 # 重试次数
+      acks: 1 # 应答级别:多少个分区副本备份完成时向生产者发送ack确认(可选0、1、all/-1)
+      batch-size: 16384 # 批量大小
+      buffer-memory: 33554432 # 生产端缓冲区大小
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      # 自动提交的时间间隔 在spring boot 2.X 版本中这里采用的是值的类型为Duration 需要符合特定的格式，如1S,1M,2H,5D
+      auto-commit-interval: 1S
+      # 该属性指定了消费者在读取一个没有偏移量的分区或者偏移量无效的情况下该作何处理：
+      # latest（默认值）在偏移量无效的情况下，消费者将从最新的记录开始读取数据（在消费者启动之后生成的记录）
+      # earliest ：在偏移量无效的情况下，消费者将从起始位置读取分区的记录
+      auto-offset-reset: earliest
+      # 是否自动提交偏移量，默认值是true,为了避免出现重复数据和数据丢失，可以把它设置为false,然后手动提交偏移量
+      enable-auto-commit: false
+      # 键的反序列化方式
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      # 值的反序列化方式
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+# mybaits-plus配置
+mybatis-plus:
+  # MyBatis Mapper所对应的XML文件位置
+  mapper-locations: classpath*:/mybatis/**/*Dao.xml
+  global-config:
+    # 关闭MybatisPlus自带的banner
+    banner: false
+    db-config:
+      worker-id: 1
+      # 主键类型
+      id-type: id_worker_str
+      field-strategy: default
+      table-underline: true
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# logging:
+#  spring: classpath:logback-spring.xml
+
+# 暴露actuator监控端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+# feign 配置
+feign:
+  sentinel:
+    enabled: true
+  okhttp:
+    enabled: true
+  httpclient:
+    enabled: false
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 10000
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+
+#请求处理的超时时间
+ribbon:
+  ReadTimeout: 10000
+  ConnectTimeout: 10000
+  eager-load:
+    enabled: true
+enableSqlFormat: true
+#caffeine 本地缓存配置
+caffeine:
+  cacheNames: actInfo
+  initCapacity: 100
+  maxSize: 1000
+  expireAfterAccess: 600
+#xxl job配置
+xxl:
+  job:
+    accessToken: default_token
+    admin:
+      addresses: http://127.0.0.1:8080/xxl-job-admin
+    executor:
+      address:
+      appname: dancechar-core-service
+      ip:
+      logpath: /Users/guohg/data/applogs/xxl-job/jobhandler
+      logretentiondays: 30
+      port: 9999   #xxl-job连接端口

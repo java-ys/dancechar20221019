@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.litian.dancechar.core.biz.blacklist.dao.inf.SysBlackListDao">
+
+    <select id="findList" parameterType="com.litian.dancechar.core.biz.blacklist.dto.SysBlackListReqDTO"
+            resultType="com.litian.dancechar.core.biz.blacklist.dto.SysBlackListRespDTO">
+        SELECT
+        c.*
+        FROM
+        sys_black_list c
+        WHERE
+        c.delete_flag = 0
+        <if test="source != null and source != ''">
+            and c.source = #{source}
+        </if>
+        <if test="reqUrl != null and reqUrl != ''">
+            and c.req_url like concat('%',#{reqUrl},'%')
+        </if>
+        <if test="blackName != null and blackName != ''">
+            and c.black_name like concat('%',#{blackName},'%')
+        </if>
+    </select>
+</mapper>
