@@ -1,0 +1,60 @@
+3.2 环境准备
+3.2.1 数据库环境
+1）在本地创建数据库dancechar，例如数据库账号/密码是：root/root
+2）执行sql脚本 dancechar.sql
+3）修改项目dancechar-base-service与dancechar-core-service配置文件bootstrap-local.yml数据库相关的配置，如下所示：
+datasource:
+  type: com.zaxxer.hikari.HikariDataSource
+  driver-class-name: com.mysql.cj.jdbc.Driver
+  url: jdbc:mysql://localhost:3306/dancechar?useUnicode=true&characterEncoding=UTF8&serverTimezone=CTT
+  username: root
+  password: root
+
+3.2.2 redis环境
+1）本地安装redis
+2）修改项目dancechar-base-service与dancechar-core-service配置文件bootstrap-local.yml数据库相关的配置，如下所示：
+redis:
+  severs: 127.0.0.1:6379
+  database: 0
+  timeout: 5000
+
+3.2.3 nacos环境准备
+1）本地安装nacos
+2）修改项目dancechar-base-service与dancechar-core-service配置文件bootstrap-local.yml数据库相关的配置，如下所示：
+cloud:
+  nacos:
+    discovery:
+      server-addr: 127.0.0.1:8848
+      namespace: public
+      register-enabled: true
+3) 访问nacos管理后台：http://127.0.0.1:8848/nacos/#/login，用户名和密码：nacos/nacos
+4) 启动nacos, 进入到nacos/bin目录，执行如下命令：
+./startup.sh -m standalone  &
+
+3.2.4 kafka环境准备
+mac参考：https://davis.blog.csdn.net/article/details/123430420?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-123430420-blog-124451129.pc_relevant_3mothn_strategy_recovery&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-123430420-blog-124451129.pc_relevant_3mothn_strategy_recovery&utm_relevant_index=1
+1）启动zookeeper
+进入Kafka 的 bin目录，执行如下命令：
+./zookeeper-server-start.sh ../config/zookeeper.properties &
+查看是否启动成功
+ps aux | grep zookeeper
+2）启动kafka
+进入Kafka 的 bin目录，执行如下命令：
+./kafka-server-start.sh ../config/server.properties &
+查看是否启动成功
+ps aux | grep kafka
+
+3.2.5 Sentinel环境准备
+1）下载Sentinel控制台dashboard jar包：https://github.com/alibaba/Sentinel/releases/download/1.8.5/sentinel-dashboard-1.8.5.jar
+2）启动Sentinel控制台dashboard，如下所示：java -Dserver.port=9000 -jar sentinel-dashboard-1.8.5.jar
+3）dashboard访问地址：http://127.0.0.1:9000
+输入用户名和密码：sentinel/sentinel
+
+
+
+
+
+
+
+
+
